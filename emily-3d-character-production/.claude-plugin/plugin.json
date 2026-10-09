@@ -1,0 +1,14 @@
+{
+  "name": "emily-3d-character-production",
+  "version": "1.0.0",
+  "description": "Guide first-party 3D scene production from a focused survey through prompt review.",
+  "author": {
+    "name": "jojo-in-runtime"
+  },
+  "keywords": [
+    "3d-production",
+    "scene-generation",
+    "blender",
+    "prompt-building"
+  ]
+}

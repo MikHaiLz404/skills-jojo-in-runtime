@@ -168,6 +168,31 @@ class MarketplaceValidatorTests(unittest.TestCase):
             },
         ]
 
+    def first_party_3d_source(self) -> dict:
+        return {
+            "name": "3d-scene-gen",
+            "classification": "first-party",
+            "marketplace": True,
+            "upstream": "local first-party source",
+            "attribution": "jojo-in-runtime",
+            "license_or_status": "approved for Emily marketplace",
+            "update": "maintain through this marketplace repository after import",
+            "local_checkout": "external/checkouts/3d-scene-gen",
+            "target_plugin": "emily-3d-character-production",
+        }
+
+    def add_skill(self, root: Path, package_name: str, skill_name: str) -> None:
+        package = root / package_name
+        (package / ".claude-plugin").mkdir(parents=True)
+        (package / ".claude-plugin" / "plugin.json").write_text(
+            json.dumps({"name": package_name}), encoding="utf-8"
+        )
+        skill = package / "skills" / skill_name
+        skill.mkdir(parents=True)
+        (skill / "SKILL.md").write_text(
+            f"---\nname: {skill_name}\ndescription: fixture\n---\n", encoding="utf-8"
+        )
+
     def test_accepts_external_registry_checkout(self) -> None:
         result = self.run_validator(
             self.make_repository(
@@ -212,6 +237,48 @@ class MarketplaceValidatorTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("caveman", result.stderr)
         self.assertIn("marketplace", result.stderr)
+
+    def test_rejects_first_party_source_missing_from_target_package(self) -> None:
+        sources = self.external_sources() + [self.first_party_3d_source()]
+        result = self.run_validator(
+            self.make_repository(
+                {"name": "emily-valid", "source": "./emily-valid"}, sources=sources
+            )
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("3d-scene-gen", result.stderr)
+
+    def test_accepts_first_party_source_in_declared_target_package(self) -> None:
+        sources = self.external_sources() + [self.first_party_3d_source()]
+        root = self.make_repository(
+            {"name": "emily-valid", "source": "./emily-valid"}, sources=sources
+        )
+        self.add_skill(root, "emily-3d-character-production", "3d-scene-gen")
+        result = self.run_validator(root)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_rejects_unverified_source_imported_into_an_emily_package(self) -> None:
+        sources = self.external_sources()
+        sources.append(
+            {
+                "name": "low-poly-diorama",
+                "classification": "unverified",
+                "marketplace": False,
+                "upstream": "not established",
+                "attribution": "not established",
+                "license_or_status": "hold outside marketplace",
+                "update": "record source before import",
+                "local_checkout": "external/checkouts/low-poly-diorama",
+            }
+        )
+        root = self.make_repository(
+            {"name": "emily-valid", "source": "./emily-valid"},
+            sources=sources,
+        )
+        self.add_skill(root, "emily-invalid", "low-poly-diorama")
+        result = self.run_validator(root)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("low-poly-diorama", result.stderr)
 
     def test_repository_has_expected_domain_skill_inventory(self) -> None:
         for package_name, expected_skills in self.EXPECTED_DOMAIN_SKILLS.items():

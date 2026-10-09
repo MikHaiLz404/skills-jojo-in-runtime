@@ -49,7 +49,8 @@
       "attribution": "jojo-in-runtime",
       "license_or_status": "approved for Emily marketplace",
       "update": "maintain through this marketplace repository after import",
-      "local_checkout": "external/checkouts/3d-scene-gen"
+      "local_checkout": "external/checkouts/3d-scene-gen",
+      "target_plugin": "emily-3d-character-production"
     },
     {
       "name": "low-poly-diorama",

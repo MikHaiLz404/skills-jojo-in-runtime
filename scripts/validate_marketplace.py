@@ -114,6 +114,10 @@ def validate_external_registry(root: Path) -> list[str]:
             errors.append(f"{label}: local_checkout must be below external/checkouts/")
         if classification in {"external", "unverified"} and source.get("marketplace") is not False:
             errors.append(f"{label}: {classification} source must set marketplace to false")
+        if classification == "first-party":
+            target_plugin = source.get("target_plugin")
+            if not isinstance(target_plugin, str) or not target_plugin.startswith("emily-"):
+                errors.append(f"{label}: first-party source requires an emily-* target_plugin")
 
     for name in sorted(KNOWN_EXTERNAL - names):
         errors.append(f"external registry is missing known source: {name}")
@@ -123,6 +127,52 @@ def validate_external_registry(root: Path) -> list[str]:
             errors.append(f"{name}: known external source must classify as external")
         if source.get("marketplace") is not False:
             errors.append(f"{name}: known external source must set marketplace to false")
+    return errors
+
+
+def discover_skill_packages(root: Path) -> dict[str, set[str]]:
+    discovered: dict[str, set[str]] = {}
+    for package in root.glob("emily-*"):
+        skills = package / "skills"
+        if not skills.is_dir():
+            continue
+        for skill in skills.iterdir():
+            if (skill / "SKILL.md").is_file():
+                discovered.setdefault(skill.name, set()).add(package.name)
+    return discovered
+
+
+def validate_provenance_imports(root: Path) -> list[str]:
+    registry_path = root / "external" / "sources.json"
+    if not registry_path.exists():
+        return []
+    errors: list[str] = []
+    registry = load_json(registry_path, errors)
+    if not isinstance(registry, dict) or not isinstance(registry.get("sources"), list):
+        return errors
+
+    discovered = discover_skill_packages(root)
+    for source in registry["sources"]:
+        if not isinstance(source, dict):
+            continue
+        name = source.get("name")
+        classification = source.get("classification")
+        if not isinstance(name, str) or not isinstance(classification, str):
+            continue
+        locations = discovered.get(name, set())
+        if classification == "first-party":
+            target = source.get("target_plugin")
+            if not isinstance(target, str):
+                continue
+            if locations != {target}:
+                rendered_locations = ", ".join(sorted(locations)) or "not imported"
+                errors.append(
+                    f"{name}: first-party source must appear once in {target}, found {rendered_locations}"
+                )
+        elif classification in {"external", "unverified"} and locations:
+            errors.append(
+                f"{name}: {classification} source must not appear in Emily packages ({', '.join(sorted(locations))})"
+            )
     return errors
 
 
@@ -141,6 +191,7 @@ def main(argv: Sequence[str]) -> int:
             _, plugin_errors = validate_plugin(root, plugin)
             errors.extend(plugin_errors)
         errors.extend(validate_external_registry(root))
+        errors.extend(validate_provenance_imports(root))
 
     if errors:
         for error in errors:
