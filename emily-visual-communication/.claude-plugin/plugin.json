@@ -1,0 +1,15 @@
+{
+  "name": "emily-visual-communication",
+  "version": "1.0.0",
+  "description": "Shape clear visual stories, presentations, infographics, and data communication with Emily.",
+  "author": {
+    "name": "jojo-in-runtime"
+  },
+  "keywords": [
+    "visual-communication",
+    "presentation",
+    "infographic",
+    "data-storytelling",
+    "brand"
+  ]
+}

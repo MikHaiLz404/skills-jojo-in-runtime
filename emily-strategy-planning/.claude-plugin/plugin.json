@@ -1,0 +1,14 @@
+{
+  "name": "emily-strategy-planning",
+  "version": "1.0.0",
+  "description": "Clarify decisions, challenge assumptions, and turn complex work into focused plans.",
+  "author": {
+    "name": "jojo-in-runtime"
+  },
+  "keywords": [
+    "strategy",
+    "planning",
+    "decision-support",
+    "workshop"
+  ]
+}

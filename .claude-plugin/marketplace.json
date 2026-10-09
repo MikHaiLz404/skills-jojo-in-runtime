@@ -1,0 +1,55 @@
+{
+  "name": "jojo-in-runtime-marketplace",
+  "version": "1.3.0",
+  "description": "Curated runtime plugins for concise delivery, codebase understanding, Emily workflows, and production ticket management.",
+  "owner": {
+    "name": "jojo",
+    "email": ""
+  },
+  "plugins": [
+    {
+      "name": "caveman",
+      "description": "Ultra-compressed communication mode that preserves technical accuracy.",
+      "source": "./caveman",
+      "category": "productivity",
+      "homepage": "https://github.com/JuliusBrussee/caveman"
+    },
+    {
+      "name": "understand-anything",
+      "description": "Analyze, visualize, and explain codebases through an interactive knowledge graph.",
+      "source": "./understand-anything/understand-anything-plugin",
+      "category": "development",
+      "homepage": "https://github.com/Egonex-AI/Understand-Anything"
+    },
+    {
+      "name": "emily-core-skills",
+      "description": "Reusable advisory, branding, infographic, Unreal, and visual game-operation skills.",
+      "source": "./emily-core-skills",
+      "category": "productivity"
+    },
+    {
+      "name": "emily-planning",
+      "description": "Planning and decision-making skills for clarifying ideas and large workstreams.",
+      "source": "./emily-planning",
+      "category": "productivity"
+    },
+    {
+      "name": "emily-presentation-system",
+      "description": "Generate data-driven narratives, visualizations, and sprint presentation decks.",
+      "source": "./emily-presentation-system",
+      "category": "productivity"
+    },
+    {
+      "name": "emily-google-chat-webhook",
+      "description": "Send Google Chat notifications and Card v2 payloads through incoming webhooks.",
+      "source": "./emily-google-chat-webhook",
+      "category": "communication"
+    },
+    {
+      "name": "jira-kitsu-ticket-management",
+      "description": "Safely compare, brief, and apply ticket changes between Jira and a Kitsu production tracker.",
+      "source": "./jira-kitsu-ticket-management",
+      "category": "productivity"
+    }
+  ]
+}

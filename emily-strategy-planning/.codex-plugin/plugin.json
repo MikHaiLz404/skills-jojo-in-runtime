@@ -1,0 +1,25 @@
+{
+  "name": "emily-strategy-planning",
+  "version": "1.0.0",
+  "description": "Clarify decisions and map complex projects with Emily.",
+  "author": {
+    "name": "jojo-in-runtime"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Emily Strategy & Planning",
+    "shortDescription": "Plan and clarify complex work",
+    "longDescription": "Collaborative Emily skills for clarifying ideas, stress-testing decisions, and mapping complex projects before implementation.",
+    "developerName": "jojo-in-runtime",
+    "category": "Productivity",
+    "capabilities": [
+      "Planning",
+      "Decision support"
+    ],
+    "defaultPrompt": [
+      "Help me turn this idea into a clear project plan.",
+      "Stress-test this design before I begin implementation.",
+      "Map the decisions needed for this complex project."
+    ]
+  }
+}

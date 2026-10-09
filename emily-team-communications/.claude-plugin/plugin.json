@@ -1,0 +1,15 @@
+{
+  "name": "emily-team-communications",
+  "version": "1.0.0",
+  "description": "Send calm, structured Google Chat notifications and Card v2 updates through incoming webhooks.",
+  "author": {
+    "name": "jojo-in-runtime"
+  },
+  "keywords": [
+    "team-communication",
+    "google-chat",
+    "webhook",
+    "notification",
+    "card-v2"
+  ]
+}

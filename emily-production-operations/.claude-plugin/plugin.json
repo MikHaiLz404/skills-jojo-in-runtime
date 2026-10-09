@@ -1,0 +1,15 @@
+{
+  "name": "emily-production-operations",
+  "version": "1.0.0",
+  "description": "Compare, brief, and apply production ticket changes between Jira and Kitsu with clear review gates.",
+  "author": {
+    "name": "jojo-in-runtime"
+  },
+  "keywords": [
+    "production-operations",
+    "jira",
+    "kitsu",
+    "ticket-management",
+    "sync"
+  ]
+}

@@ -11,6 +11,33 @@ VALIDATOR = REPO_ROOT / "scripts" / "validate_marketplace.py"
 
 
 class MarketplaceValidatorTests(unittest.TestCase):
+    EXPECTED_DOMAIN_SKILLS = {
+        "emily-strategy-planning": {
+            "emily-advisor-strategy",
+            "grill-me",
+            "grill-with-docs",
+            "grilling",
+            "wayfinder",
+        },
+        "emily-visual-communication": {
+            "emily-brand-unified-guidelines",
+            "emily-infographic-gen",
+            "data-storytelling",
+            "presentation-generation",
+            "visualization-expert",
+        },
+        "emily-team-communications": {"emily-google-chat-webhook"},
+        "emily-production-operations": {
+            "jira-kitsu-ticket-sync",
+            "jira-kitsu-weekly-brief",
+            "jira-kitsu-apply-brief",
+        },
+        "emily-game-workflows": {
+            "emily-unreal-explorer",
+            "matcha-cat-memory-game",
+        },
+    }
+
     def make_repository(
         self,
         plugin: dict,
@@ -185,6 +212,19 @@ class MarketplaceValidatorTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("caveman", result.stderr)
         self.assertIn("marketplace", result.stderr)
+
+    def test_repository_has_expected_domain_skill_inventory(self) -> None:
+        for package_name, expected_skills in self.EXPECTED_DOMAIN_SKILLS.items():
+            package = REPO_ROOT / package_name
+            self.assertTrue(
+                (package / ".claude-plugin" / "plugin.json").is_file(), package_name
+            )
+            actual_skills = {
+                child.name
+                for child in (package / "skills").iterdir()
+                if (child / "SKILL.md").is_file()
+            }
+            self.assertEqual(actual_skills, expected_skills, package_name)
 
 
 if __name__ == "__main__":

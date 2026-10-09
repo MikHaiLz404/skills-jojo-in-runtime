@@ -1,0 +1,13 @@
+{
+  "name": "emily-game-workflows",
+  "version": "1.0.0",
+  "description": "Explore Unreal projects and plan focused game workflows with Emily.",
+  "author": {
+    "name": "jojo-in-runtime"
+  },
+  "keywords": [
+    "game-development",
+    "unreal-engine",
+    "game-workflows"
+  ]
+}
