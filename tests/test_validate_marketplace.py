@@ -357,6 +357,17 @@ class MarketplaceValidatorTests(unittest.TestCase):
             & catalog_names
         )
 
+    def test_codex_plugin_display_name_uses_the_canonical_lowercase_identifier(self) -> None:
+        manifest = json.loads(
+            (
+                REPO_ROOT
+                / "emily-strategy-planning"
+                / ".codex-plugin"
+                / "plugin.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(manifest["interface"]["displayName"], "emily-strategy-planning")
+
 
 if __name__ == "__main__":
     unittest.main()

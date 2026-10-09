@@ -22,7 +22,7 @@ class PrivateRemoteVerificationTests(unittest.TestCase):
     OWNER = "MikHaiLz404"
     REPOSITORY = "skills-jojo-in-runtime"
 
-    def runner(self, *, visibility: str = "PRIVATE"):
+    def runner(self, *, visibility: str = "PRIVATE", branch: str = "main"):
         calls: list[tuple[str, ...]] = []
         metadata = json.dumps(
             {
@@ -30,6 +30,7 @@ class PrivateRemoteVerificationTests(unittest.TestCase):
                 "owner": {"login": self.OWNER},
                 "visibility": visibility,
                 "url": f"https://github.com/{self.OWNER}/{self.REPOSITORY}",
+                "defaultBranchRef": {"name": branch},
             }
         )
 
@@ -37,11 +38,12 @@ class PrivateRemoteVerificationTests(unittest.TestCase):
             calls.append(tuple(command))
             outputs = {
                 ("gh", "repo", "view", f"{self.OWNER}/{self.REPOSITORY}", "--json", "name,owner,visibility,url"): metadata,
+                ("gh", "repo", "view", f"{self.OWNER}/{self.REPOSITORY}", "--json", "name,owner,visibility,url,defaultBranchRef"): metadata,
                 ("git", "remote", "get-url", "origin"): f"https://github.com/{self.OWNER}/{self.REPOSITORY}.git\n",
-                ("git", "branch", "--show-current"): "main\n",
+                ("git", "branch", "--show-current"): f"{branch}\n",
                 ("git", "status", "--porcelain"): "",
                 ("git", "ls-files", "external/checkouts"): "",
-                ("git", "push", "origin", "main"): "",
+                ("git", "push", "origin", branch): "",
             }
             output = outputs.get(tuple(command), "")
             return subprocess.CompletedProcess(command, 0, output, "")
@@ -61,6 +63,13 @@ class PrivateRemoteVerificationTests(unittest.TestCase):
         errors = module.verify_and_optionally_push(self.OWNER, self.REPOSITORY, run, push=True)
         self.assertEqual(errors, [])
         self.assertEqual(calls[-1], ("git", "push", "origin", "main"))
+
+    def test_pushes_the_remote_default_branch_when_it_is_develop(self) -> None:
+        module = load_module()
+        run, calls = self.runner(branch="develop")
+        errors = module.verify_and_optionally_push(self.OWNER, self.REPOSITORY, run, push=True)
+        self.assertEqual(errors, [])
+        self.assertEqual(calls[-1], ("git", "push", "origin", "develop"))
 
 
 if __name__ == "__main__":

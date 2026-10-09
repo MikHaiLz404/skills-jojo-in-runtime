@@ -41,7 +41,7 @@ def verify_and_optionally_push(
             "view",
             f"{owner}/{repository}",
             "--json",
-            "name,owner,visibility,url",
+            "name,owner,visibility,url,defaultBranchRef",
         ],
         runner,
         errors,
@@ -58,6 +58,10 @@ def verify_and_optionally_push(
         errors.append(f"repository owner must be {owner}")
     if metadata.get("visibility") != "PRIVATE":
         errors.append("repository visibility must be PRIVATE")
+    default_branch = metadata.get("defaultBranchRef", {}).get("name")
+    if not isinstance(default_branch, str) or not default_branch:
+        errors.append("repository must declare a default branch")
+        default_branch = ""
 
     remote = run_checked(["git", "remote", "get-url", "origin"], runner, errors)
     expected_remotes = {
@@ -69,8 +73,8 @@ def verify_and_optionally_push(
         errors.append(f"origin must target {owner}/{repository}")
 
     branch = run_checked(["git", "branch", "--show-current"], runner, errors)
-    if branch != "main":
-        errors.append("current branch must be main")
+    if branch != default_branch:
+        errors.append(f"current branch must be {default_branch}")
     if run_checked(["git", "status", "--porcelain"], runner, errors):
         errors.append("worktree must be clean before pushing")
     if run_checked(["git", "ls-files", "external/checkouts"], runner, errors):
@@ -79,7 +83,7 @@ def verify_and_optionally_push(
     if errors or not push:
         return errors
 
-    run_checked(["git", "push", "origin", "main"], runner, errors)
+    run_checked(["git", "push", "origin", default_branch], runner, errors)
     return errors
 
 
