@@ -104,7 +104,7 @@ def main(argv: Sequence[str]) -> int:
         return 1
     print(f"verified private remote {args.owner}/{args.repository}")
     if args.push:
-        print("pushed origin/main")
+        print("pushed the configured default branch")
     return 0
 
 
