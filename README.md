@@ -1,11 +1,11 @@
 # Emily Skills Marketplace
 
-Private marketplace for first-party Emily workflows. The default branch is
+Public marketplace for first-party Emily workflows. The default branch is
 `develop`.
 
 ## Install a plugin
 
-Use the plugin name you need with the private marketplace:
+Use the plugin name you need with this marketplace:
 
 ```text
 /plugin install <plugin-name> --marketplace MikHaiLz404/skills-jojo-in-runtime
@@ -35,7 +35,7 @@ its own upstream; doing so never updates this marketplace.
 
 ## Sync and maintain
 
-Clone the private repository and work from `develop`:
+Clone the repository and work from `develop`:
 
 ```sh
 git clone https://github.com/MikHaiLz404/skills-jojo-in-runtime.git
@@ -50,14 +50,14 @@ Before publishing a marketplace update, run:
 python3 -m unittest discover -s tests -v
 python3 scripts/validate_marketplace.py .
 claude plugin validate .
-python3 scripts/verify_private_remote.py --owner MikHaiLz404
+python3 scripts/verify_marketplace_remote.py --owner MikHaiLz404
 ```
 
 To push only after the remote, branch, clean worktree, and external-boundary
 checks pass:
 
 ```sh
-python3 scripts/verify_private_remote.py --owner MikHaiLz404 --push
+python3 scripts/verify_marketplace_remote.py --owner MikHaiLz404 --push
 ```
 
 ## Contribution rules

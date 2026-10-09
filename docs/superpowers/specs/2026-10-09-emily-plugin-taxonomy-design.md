@@ -127,7 +127,7 @@ and its image-generation adapters are stubs.
    upstream, attribution, license/status, and update path.
 6. Verify a clean clone can install the first-party marketplace and that an
    external checkout remains absent from tracked files.
-7. Verify the private remote, initial push, clean worktree, and matching local
+7. Verify the public remote, initial push, clean worktree, and matching local
    and `origin` commit IDs.
 
 ## Out of scope

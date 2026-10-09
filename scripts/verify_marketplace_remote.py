@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the private marketplace remote before an explicit push."""
+"""Verify the public marketplace remote before an explicit push."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from collections.abc import Callable, Sequence
 
 
 CommandRunner = Callable[[list[str]], subprocess.CompletedProcess[str]]
+EXPECTED_VISIBILITY = "PUBLIC"
 
 
 def run_command(command: list[str]) -> subprocess.CompletedProcess[str]:
@@ -56,8 +57,8 @@ def verify_and_optionally_push(
         errors.append(f"repository name must be {repository}")
     if metadata.get("owner", {}).get("login") != owner:
         errors.append(f"repository owner must be {owner}")
-    if metadata.get("visibility") != "PRIVATE":
-        errors.append("repository visibility must be PRIVATE")
+    if metadata.get("visibility") != EXPECTED_VISIBILITY:
+        errors.append(f"repository visibility must be {EXPECTED_VISIBILITY}")
     default_branch = metadata.get("defaultBranchRef", {}).get("name")
     if not isinstance(default_branch, str) or not default_branch:
         errors.append("repository must declare a default branch")
@@ -89,12 +90,14 @@ def verify_and_optionally_push(
 
 def main(argv: Sequence[str]) -> int:
     parser = argparse.ArgumentParser(
-        description="Verify a private GitHub marketplace remote before an explicit push."
+        description="Verify a public GitHub marketplace remote before an explicit push."
     )
     parser.add_argument("--owner", required=True)
     parser.add_argument("--repository", default="skills-jojo-in-runtime")
     parser.add_argument(
-        "--push", action="store_true", help="Push main only after all verification checks pass."
+        "--push",
+        action="store_true",
+        help="Push the configured default branch only after all verification checks pass.",
     )
     args = parser.parse_args(argv[1:])
     errors = verify_and_optionally_push(args.owner, args.repository, run_command, push=args.push)
@@ -102,7 +105,7 @@ def main(argv: Sequence[str]) -> int:
         for error in errors:
             print(error, file=sys.stderr)
         return 1
-    print(f"verified private remote {args.owner}/{args.repository}")
+    print(f"verified public marketplace remote {args.owner}/{args.repository}")
     if args.push:
         print("pushed the configured default branch")
     return 0
