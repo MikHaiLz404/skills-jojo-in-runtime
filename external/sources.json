@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "name": "caveman",
+      "classification": "external",
+      "marketplace": false,
+      "upstream": "https://github.com/JuliusBrussee/caveman",
+      "attribution": "Julius Brussee",
+      "license_or_status": "upstream license; excluded from Emily distribution",
+      "update": "git -C external/checkouts/caveman pull --ff-only",
+      "local_checkout": "external/checkouts/caveman"
+    },
+    {
+      "name": "understand-anything",
+      "classification": "external",
+      "marketplace": false,
+      "upstream": "https://github.com/Egonex-AI/Understand-Anything",
+      "attribution": "Egonex-AI",
+      "license_or_status": "MIT; excluded from Emily distribution",
+      "update": "git -C external/checkouts/understand-anything pull --ff-only",
+      "local_checkout": "external/checkouts/understand-anything"
+    },
+    {
+      "name": "character-sheet-pipeline",
+      "classification": "external",
+      "marketplace": false,
+      "upstream": "https://www.top3d.ai/",
+      "attribution": "Stefan Vaskevich / Top3D",
+      "license_or_status": "redistribution permission not established; excluded from Emily distribution",
+      "update": "check upstream source before updating local reference",
+      "local_checkout": "external/checkouts/character-sheet-pipeline"
+    },
+    {
+      "name": "character-sheet-pipeline-openai",
+      "classification": "external",
+      "marketplace": false,
+      "upstream": "https://www.top3d.ai/",
+      "attribution": "Stefan Vaskevich / Top3D",
+      "license_or_status": "redistribution permission not established; excluded from Emily distribution",
+      "update": "check upstream source before updating local reference",
+      "local_checkout": "external/checkouts/character-sheet-pipeline-openai"
+    },
+    {
+      "name": "3d-scene-gen",
+      "classification": "first-party",
+      "marketplace": true,
+      "upstream": "local first-party source",
+      "attribution": "jojo-in-runtime",
+      "license_or_status": "approved for Emily marketplace",
+      "update": "maintain through this marketplace repository after import",
+      "local_checkout": "external/checkouts/3d-scene-gen"
+    },
+    {
+      "name": "low-poly-diorama",
+      "classification": "unverified",
+      "marketplace": false,
+      "upstream": "not established",
+      "attribution": "not established",
+      "license_or_status": "hold outside marketplace until provenance is recorded",
+      "update": "record source before any marketplace import",
+      "local_checkout": "external/checkouts/low-poly-diorama"
+    },
+    {
+      "name": "character-sprite-animation",
+      "classification": "unverified",
+      "marketplace": false,
+      "upstream": "not established",
+      "attribution": "not established",
+      "license_or_status": "hold outside marketplace until provenance is recorded",
+      "update": "record source before any marketplace import",
+      "local_checkout": "external/checkouts/character-sprite-animation"
+    },
+    {
+      "name": "isometric-asset-sheets",
+      "classification": "unverified",
+      "marketplace": false,
+      "upstream": "not established",
+      "attribution": "metadata names emily club; ownership not yet confirmed",
+      "license_or_status": "hold outside marketplace until provenance is recorded",
+      "update": "record source before any marketplace import",
+      "local_checkout": "external/checkouts/isometric-asset-sheets"
+    },
+    {
+      "name": "strip-asset-cutter",
+      "classification": "unverified",
+      "marketplace": false,
+      "upstream": "not established",
+      "attribution": "not established",
+      "license_or_status": "hold outside marketplace until provenance is recorded",
+      "update": "record source before any marketplace import",
+      "local_checkout": "external/checkouts/strip-asset-cutter"
+    },
+    {
+      "name": "granblue-daily-mission",
+      "classification": "unverified",
+      "marketplace": false,
+      "upstream": "not established",
+      "attribution": "not established",
+      "license_or_status": "hold outside marketplace until provenance is recorded",
+      "update": "record source before any marketplace import",
+      "local_checkout": "external/checkouts/granblue-daily-mission"
+    },
+    {
+      "name": "granblue-event-raid-battle",
+      "classification": "unverified",
+      "marketplace": false,
+      "upstream": "not established",
+      "attribution": "not established",
+      "license_or_status": "hold outside marketplace until provenance is recorded",
+      "update": "record source before any marketplace import",
+      "local_checkout": "external/checkouts/granblue-event-raid-battle"
+    },
+    {
+      "name": "granblue-event-special-quests",
+      "classification": "unverified",
+      "marketplace": false,
+      "upstream": "not established",
+      "attribution": "not established",
+      "license_or_status": "hold outside marketplace until provenance is recorded",
+      "update": "record source before any marketplace import",
+      "local_checkout": "external/checkouts/granblue-event-special-quests"
+    }
+  ]
+}

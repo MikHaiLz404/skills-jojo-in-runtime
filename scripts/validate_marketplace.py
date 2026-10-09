@@ -10,6 +10,21 @@ from typing import Sequence
 
 
 BLOCKED_ROOTS = {"external", "caveman", "understand-anything"}
+KNOWN_EXTERNAL = {
+    "caveman",
+    "understand-anything",
+    "character-sheet-pipeline",
+    "character-sheet-pipeline-openai",
+}
+SOURCE_FIELDS = {
+    "name",
+    "classification",
+    "upstream",
+    "attribution",
+    "license_or_status",
+    "update",
+    "local_checkout",
+}
 
 
 def load_json(path: Path, errors: list[str]) -> object | None:
@@ -62,6 +77,55 @@ def validate_plugin(root: Path, plugin: object) -> tuple[str | None, list[str]]:
     return name, errors
 
 
+def validate_external_registry(root: Path) -> list[str]:
+    registry_path = root / "external" / "sources.json"
+    if not registry_path.exists():
+        return []
+
+    errors: list[str] = []
+    registry = load_json(registry_path, errors)
+    if not isinstance(registry, dict):
+        return errors + ["external registry must be a JSON object"]
+    sources = registry.get("sources")
+    if not isinstance(sources, list):
+        return errors + ["external registry sources must be a list"]
+
+    names: set[str] = set()
+    for source in sources:
+        if not isinstance(source, dict):
+            errors.append("external registry source must be an object")
+            continue
+        name = source.get("name")
+        label = name if isinstance(name, str) and name else "unnamed source"
+        for field in SOURCE_FIELDS:
+            if not isinstance(source.get(field), str) or not source[field]:
+                errors.append(f"{label}: external registry requires {field}")
+        classification = source.get("classification")
+        if classification not in {"external", "unverified", "first-party"}:
+            errors.append(f"{label}: invalid classification {classification!r}")
+        if isinstance(name, str):
+            if name in names:
+                errors.append(f"{name}: duplicate external registry source")
+            names.add(name)
+        local_checkout = source.get("local_checkout")
+        if isinstance(local_checkout, str) and not local_checkout.startswith(
+            "external/checkouts/"
+        ):
+            errors.append(f"{label}: local_checkout must be below external/checkouts/")
+        if classification in {"external", "unverified"} and source.get("marketplace") is not False:
+            errors.append(f"{label}: {classification} source must set marketplace to false")
+
+    for name in sorted(KNOWN_EXTERNAL - names):
+        errors.append(f"external registry is missing known source: {name}")
+    for name in sorted(KNOWN_EXTERNAL & names):
+        source = next(item for item in sources if item.get("name") == name)
+        if source.get("classification") != "external":
+            errors.append(f"{name}: known external source must classify as external")
+        if source.get("marketplace") is not False:
+            errors.append(f"{name}: known external source must set marketplace to false")
+    return errors
+
+
 def main(argv: Sequence[str]) -> int:
     root = Path(argv[1] if len(argv) > 1 else ".").resolve()
     errors: list[str] = []
@@ -76,6 +140,7 @@ def main(argv: Sequence[str]) -> int:
         for plugin in plugins:
             _, plugin_errors = validate_plugin(root, plugin)
             errors.extend(plugin_errors)
+        errors.extend(validate_external_registry(root))
 
     if errors:
         for error in errors:
