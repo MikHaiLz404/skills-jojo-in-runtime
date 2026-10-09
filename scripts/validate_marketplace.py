@@ -57,9 +57,11 @@ def validate_plugin(root: Path, plugin: object) -> tuple[str | None, list[str]]:
     if not source_path.parts:
         errors.append(f"{name}: source must name a plugin directory")
         return name, errors
-    if source_path.parts[0] in BLOCKED_ROOTS:
-        errors.append(f"{name}: source cannot use external root {source_path.parts[0]}")
-        return name, errors
+    if source_path != Path(name):
+        errors.append(f"{name}: source must equal ./{name}")
+    blocked_parts = sorted(BLOCKED_ROOTS & set(source_path.parts))
+    if blocked_parts:
+        errors.append(f"{name}: source contains blocked path component {blocked_parts[0]}")
 
     package = (root / source_path).resolve()
     try:
@@ -72,8 +74,17 @@ def validate_plugin(root: Path, plugin: object) -> tuple[str | None, list[str]]:
         return name, errors
     if (package / ".git").exists():
         errors.append(f"{name}: source contains a nested Git directory")
-    if not (package / ".claude-plugin" / "plugin.json").is_file():
+    plugin_manifest_path = package / ".claude-plugin" / "plugin.json"
+    if not plugin_manifest_path.is_file():
         errors.append(f"{name}: source is missing .claude-plugin/plugin.json")
+    else:
+        manifest_errors: list[str] = []
+        package_manifest = load_json(plugin_manifest_path, manifest_errors)
+        if not isinstance(package_manifest, dict):
+            errors.append(f"{name}: source plugin manifest must be a JSON object")
+            errors.extend(manifest_errors)
+        elif package_manifest.get("name") != name:
+            errors.append(f"{name}: source plugin manifest name must match catalog entry")
     return name, errors
 
 
@@ -130,6 +141,19 @@ def validate_external_registry(root: Path) -> list[str]:
     return errors
 
 
+def read_skill_name(path: Path) -> str | None:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0] != "---":
+        return None
+    for line in lines[1:]:
+        if line == "---":
+            break
+        if line.startswith("name:"):
+            value = line.partition(":")[2].strip().strip("\"'")
+            return value or None
+    return None
+
+
 def discover_skill_packages(root: Path) -> dict[str, set[str]]:
     discovered: dict[str, set[str]] = {}
     for package in root.glob("emily-*"):
@@ -137,8 +161,11 @@ def discover_skill_packages(root: Path) -> dict[str, set[str]]:
         if not skills.is_dir():
             continue
         for skill in skills.iterdir():
-            if (skill / "SKILL.md").is_file():
-                discovered.setdefault(skill.name, set()).add(package.name)
+            skill_path = skill / "SKILL.md"
+            if skill_path.is_file():
+                skill_name = read_skill_name(skill_path)
+                if skill_name:
+                    discovered.setdefault(skill_name, set()).add(package.name)
     return discovered
 
 
@@ -152,6 +179,7 @@ def validate_provenance_imports(root: Path) -> list[str]:
         return errors
 
     discovered = discover_skill_packages(root)
+    sources_by_name: dict[str, dict[str, object]] = {}
     for source in registry["sources"]:
         if not isinstance(source, dict):
             continue
@@ -159,6 +187,21 @@ def validate_provenance_imports(root: Path) -> list[str]:
         classification = source.get("classification")
         if not isinstance(name, str) or not isinstance(classification, str):
             continue
+        sources_by_name[name] = source
+
+    for name, locations in discovered.items():
+        source = sources_by_name.get(name)
+        if source is None:
+            errors.append(f"{name}: published skill has no provenance registry record")
+            continue
+        classification = source.get("classification")
+        if classification in {"external", "unverified"}:
+            errors.append(
+                f"{name}: {classification} source must not appear in Emily packages ({', '.join(sorted(locations))})"
+            )
+
+    for name, source in sources_by_name.items():
+        classification = source.get("classification")
         locations = discovered.get(name, set())
         if classification == "first-party":
             target = source.get("target_plugin")
@@ -169,10 +212,6 @@ def validate_provenance_imports(root: Path) -> list[str]:
                 errors.append(
                     f"{name}: first-party source must appear once in {target}, found {rendered_locations}"
                 )
-        elif classification in {"external", "unverified"} and locations:
-            errors.append(
-                f"{name}: {classification} source must not appear in Emily packages ({', '.join(sorted(locations))})"
-            )
     return errors
 
 

@@ -16,6 +16,14 @@ Supports **plain text**, **rich formatting** (bold, italic, links, @mentions), a
 
 ---
 
+## Install from the private Emily marketplace
+
+```sh
+/plugin install emily-team-communications --marketplace MikHaiLz404/skills-jojo-in-runtime
+```
+
+---
+
 ## Quick setup
 
 ### 1. Get your webhook URL

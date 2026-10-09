@@ -98,6 +98,16 @@ class MarketplaceValidatorTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("external", result.stderr)
 
+    def test_rejects_nested_blocked_source_path(self) -> None:
+        result = self.run_validator(
+            self.make_repository(
+                {"name": "emily-wrapper", "source": "./emily-wrapper/caveman"}
+            )
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("must equal", result.stderr)
+        self.assertIn("caveman", result.stderr)
+
     def test_rejects_missing_source_directory(self) -> None:
         root = Path(tempfile.mkdtemp())
         self.addCleanup(lambda: __import__("shutil").rmtree(root))
@@ -123,6 +133,17 @@ class MarketplaceValidatorTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("nested Git", result.stderr)
+
+    def test_rejects_package_manifest_name_mismatch(self) -> None:
+        root = self.make_repository(
+            {"name": "emily-valid", "source": "./emily-valid"}
+        )
+        (root / "emily-valid" / ".claude-plugin" / "plugin.json").write_text(
+            json.dumps({"name": "emily-different"}), encoding="utf-8"
+        )
+        result = self.run_validator(root)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("manifest name", result.stderr)
 
     def external_sources(self) -> list[dict]:
         return [
@@ -183,7 +204,7 @@ class MarketplaceValidatorTests(unittest.TestCase):
 
     def add_skill(self, root: Path, package_name: str, skill_name: str) -> None:
         package = root / package_name
-        (package / ".claude-plugin").mkdir(parents=True)
+        (package / ".claude-plugin").mkdir(parents=True, exist_ok=True)
         (package / ".claude-plugin" / "plugin.json").write_text(
             json.dumps({"name": package_name}), encoding="utf-8"
         )
@@ -279,6 +300,16 @@ class MarketplaceValidatorTests(unittest.TestCase):
         result = self.run_validator(root)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("low-poly-diorama", result.stderr)
+
+    def test_rejects_unregistered_skill_in_an_emily_package(self) -> None:
+        root = self.make_repository(
+            {"name": "emily-valid", "source": "./emily-valid"},
+            sources=self.external_sources(),
+        )
+        self.add_skill(root, "emily-valid", "renamed-stefan-skill")
+        result = self.run_validator(root)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("renamed-stefan-skill", result.stderr)
 
     def test_repository_has_expected_domain_skill_inventory(self) -> None:
         for package_name, expected_skills in self.EXPECTED_DOMAIN_SKILLS.items():
