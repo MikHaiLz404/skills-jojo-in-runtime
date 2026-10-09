@@ -293,6 +293,39 @@ class MarketplaceValidatorTests(unittest.TestCase):
             }
             self.assertEqual(actual_skills, expected_skills, package_name)
 
+    def test_catalog_matches_nonempty_first_party_packages(self) -> None:
+        manifest = json.loads(
+            (REPO_ROOT / ".claude-plugin" / "marketplace.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(manifest["version"], "2.0.0")
+        expected_packages = {
+            package.name
+            for package in REPO_ROOT.glob("emily-*")
+            if (package / ".claude-plugin" / "plugin.json").is_file()
+            and any((skill / "SKILL.md").is_file() for skill in (package / "skills").iterdir())
+        }
+        catalog_names = {plugin["name"] for plugin in manifest["plugins"]}
+        self.assertEqual(catalog_names, expected_packages)
+        for plugin in manifest["plugins"]:
+            self.assertTrue(plugin["name"].startswith("emily-"))
+            self.assertEqual(plugin["source"], f"./{plugin['name']}")
+            self.assertIsInstance(plugin["category"], str)
+        self.assertFalse(
+            {
+                "caveman",
+                "understand-anything",
+                "character-sheet-pipeline",
+                "emily-core-skills",
+                "emily-planning",
+                "emily-presentation-system",
+                "emily-google-chat-webhook",
+                "jira-kitsu-ticket-management",
+            }
+            & catalog_names
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

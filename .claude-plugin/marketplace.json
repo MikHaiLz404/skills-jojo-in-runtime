@@ -1,55 +1,47 @@
 {
   "name": "jojo-in-runtime-marketplace",
-  "version": "1.3.0",
-  "description": "Curated runtime plugins for concise delivery, codebase understanding, Emily workflows, and production ticket management.",
+  "version": "2.0.0",
+  "description": "Private Emily workflows for focused planning, communication, production operations, games, and 3D work.",
   "owner": {
     "name": "jojo",
     "email": ""
   },
   "plugins": [
     {
-      "name": "caveman",
-      "description": "Ultra-compressed communication mode that preserves technical accuracy.",
-      "source": "./caveman",
-      "category": "productivity",
-      "homepage": "https://github.com/JuliusBrussee/caveman"
-    },
-    {
-      "name": "understand-anything",
-      "description": "Analyze, visualize, and explain codebases through an interactive knowledge graph.",
-      "source": "./understand-anything/understand-anything-plugin",
-      "category": "development",
-      "homepage": "https://github.com/Egonex-AI/Understand-Anything"
-    },
-    {
-      "name": "emily-core-skills",
-      "description": "Reusable advisory, branding, infographic, Unreal, and visual game-operation skills.",
-      "source": "./emily-core-skills",
+      "name": "emily-strategy-planning",
+      "description": "Clarify decisions, challenge assumptions, and turn complex work into focused plans.",
+      "source": "./emily-strategy-planning",
       "category": "productivity"
     },
     {
-      "name": "emily-planning",
-      "description": "Planning and decision-making skills for clarifying ideas and large workstreams.",
-      "source": "./emily-planning",
+      "name": "emily-visual-communication",
+      "description": "Shape clear visual stories, presentations, infographics, and data communication with Emily.",
+      "source": "./emily-visual-communication",
       "category": "productivity"
     },
     {
-      "name": "emily-presentation-system",
-      "description": "Generate data-driven narratives, visualizations, and sprint presentation decks.",
-      "source": "./emily-presentation-system",
-      "category": "productivity"
-    },
-    {
-      "name": "emily-google-chat-webhook",
-      "description": "Send Google Chat notifications and Card v2 payloads through incoming webhooks.",
-      "source": "./emily-google-chat-webhook",
+      "name": "emily-team-communications",
+      "description": "Send calm, structured Google Chat notifications and Card v2 updates through incoming webhooks.",
+      "source": "./emily-team-communications",
       "category": "communication"
     },
     {
-      "name": "jira-kitsu-ticket-management",
-      "description": "Safely compare, brief, and apply ticket changes between Jira and a Kitsu production tracker.",
-      "source": "./jira-kitsu-ticket-management",
+      "name": "emily-production-operations",
+      "description": "Compare, brief, and apply production ticket changes between Jira and Kitsu with clear review gates.",
+      "source": "./emily-production-operations",
       "category": "productivity"
+    },
+    {
+      "name": "emily-game-workflows",
+      "description": "Explore Unreal projects and plan focused game workflows with Emily.",
+      "source": "./emily-game-workflows",
+      "category": "development"
+    },
+    {
+      "name": "emily-3d-character-production",
+      "description": "Guide first-party 3D scene production from a focused survey through prompt review.",
+      "source": "./emily-3d-character-production",
+      "category": "development"
     }
   ]
 }
